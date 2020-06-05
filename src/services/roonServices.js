@@ -3,6 +3,7 @@ const roonTransport = require('node-roon-api-transport');
 const roonImage = require('node-roon-api-image');
 const roonBrowse = require('node-roon-api-browse');
 
+
 const streamAction = {
     PLAY_OR_PAUSE: 'playpause',
     STOP: 'stop',
@@ -20,10 +21,10 @@ const RoonServices = class {
     constructor() { }
 
     connectToRoon() {
-        return new Promise( resolve => {
+        return new Promise(resolve => {
             this.roonInstance = new roonApi({
                 extension_id: 'roon.web.comassky',
-                display_name: 'Roon Web Application',
+                display_name: 'Woon',
                 display_version: '0.0.1',
                 publisher: 'ComasSky',
                 email: 'john.doe@gmail.com',
@@ -57,11 +58,17 @@ const RoonServices = class {
                 required_services: [roonBrowse, roonTransport, roonImage],
             });
 
-            
+
+
         });
     }
 
-
+    subscribeToZone(callback) {
+        this.roonCore.services.RoonApiTransport.subscribe_zones((response, data) => {
+            //EventBus.$emit("seekChanged",{response:response, data:data});
+            callback(response, data);
+        });
+    }
 
     searchArtist() {
         return this.roonCore.services.RoonApiBrowse.load({
@@ -74,13 +81,31 @@ const RoonServices = class {
         return this.roonZones;
     }
 
-    updateVolume(outputId, value){
+    updateVolume(outputId, value) {
         this.roonCore.services.RoonApiTransport.change_volume(outputId, 'absolute', value);
     }
 
-    playOrPause(){
-        this.roonCore.services.RoonApiTransport.control(this.roonZones[0],streamAction.PLAY_OR_PAUSE);
+    playOrPause(zone) {
+        this.roonCore.services.RoonApiTransport.control(zone, streamAction.PLAY_OR_PAUSE);
     }
+
+    stopSong(zone) {
+        this.roonCore.services.RoonApiTransport.control(zone, streamAction.STOP);
+    }
+
+    nextSong(zone) {
+        this.roonCore.services.RoonApiTransport.control(zone, streamAction.NEXT);
+    }
+
+    previousSong(zone) {
+        this.roonCore.services.RoonApiTransport.control(zone, streamAction.PREVIOUS);
+    }
+
+    getCurrentPlay(zone) {
+        return zone;
+    }
+
+
 }
 
-module.exports = RoonServices;
+export default new RoonServices;

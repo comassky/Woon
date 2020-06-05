@@ -1,49 +1,49 @@
 <template>
   <v-app id="inspire">
     <Menu />
-    <v-app-bar app clipped-left>
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>Application</v-toolbar-title>
-    </v-app-bar>
+    <v-app-bar app clipped-left></v-app-bar>
 
     <v-content>
       <v-container class="fill-height" fluid>
         <v-row align="center" justify="center">
           <v-col class="shrink">
+            <CurrentPlaying :zone="selectedZone"/>
             <Zone
               v-for="zone in zones"
               :zone="zone"
               :key="zone.id_zone"
-              @volumeUpdate="updateVolume"
+              @volumeUpdate="updateVolume" hidden
             />
           </v-col>
         </v-row>
       </v-container>
     </v-content>
-
-    <v-footer app>
-      <span>&copy; 2020</span>
-    </v-footer>
+    <StreamBar :zone="selectedZone" @volumeToUpdate="updateVolume" />
   </v-app>
 </template>
 
 <script>
 import Zone from "./components/Zone";
 import Menu from "./components/Menu";
+import StreamBar from "./components/StreamBar";
+import CurrentPlaying from "./components/CurrentPlaying";
+import _ from "underscore";
 
-const RoonServices = require("./services/roonServices");
+import RoonServices from "./services/roonServices";
 
 export default {
   name: "App",
 
   components: {
     Zone,
-    Menu
+    Menu,
+    StreamBar,
+    CurrentPlaying
   },
 
   data: () => ({
     zones: [],
-    selectedZone: {},
+    selectedZone: {zone:null, seek:null},
     myRoonInstance: {}
   }),
 
@@ -52,15 +52,21 @@ export default {
   },
 
   mounted() {
-    this.myRoonInstance = new RoonServices();
+    this.myRoonInstance = RoonServices;
     this.myRoonInstance.connectToRoon().then(() => {
       this.zones = this.myRoonInstance.getRoonZones();
+      this.myRoonInstance.subscribeToZone(this.updateZone);
+      //BOUCHON
+      this.selectedZone.zone = this.zones[0];
     });
   },
 
   methods: {
     updateVolume(volumeInfo) {
       this.myRoonInstance.updateVolume(volumeInfo.output, volumeInfo.volume);
+    },
+    updateZone(response, data) {
+      this.selectedZone.seek = _.first(data.zones_seek_changed);
     }
   }
 };

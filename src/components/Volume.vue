@@ -1,15 +1,14 @@
 
  
  <template>
-  <v-card class="mx-auto" min-width="200">
-    {{zone}}
-  </v-card>
+  <v-slider v-model="volume" thumb-label></v-slider>
 </template>
 
 <script>
+import _ from "lodash";
 
 export default {
-  name: "Zone",
+  name: "Volume",
 
   props: ["zone"],
 
@@ -26,7 +25,13 @@ export default {
           return this.zone.outputs[0].volume.value;
         }
         return 0;
-      }
+      },
+      set: _.debounce(function(newValue) {
+        this.$emit("volumeUpdate", {
+          output: this.zone.outputs[0].output_id,
+          volume: newValue
+        });
+      }, 500)
     }
   },
   data: () => ({})

@@ -3,7 +3,7 @@ RUN mkdir -p /workspace
 WORKDIR /workspace
 RUN apk update
 RUN apk add git
-RUN git clone https://github.com/comassky/roon-web.git
+RUN git clone https://github.com/comassky/Woon.git
 WORKDIR /roon-web
 RUN --mount=type=cache,target=/root/.m2 yarn install
 RUN yarn build
