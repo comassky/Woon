@@ -22,11 +22,11 @@ const RoonServices = class {
     connectToRoon() {
         return new Promise( resolve => {
             this.roonInstance = new roonApi({
-                extension_id: 'com.roonlabs.web.testapp',
-                display_name: 'Roon API Web Test Application',
-                display_version: '1.0.0',
-                publisher: 'Roon Labs, LLC',
-                email: 'contact@roonlabs.com',
+                extension_id: 'roon.web.comassky',
+                display_name: 'Roon Web Application',
+                display_version: '0.0.1',
+                publisher: 'ComasSky',
+                email: 'john.doe@gmail.com',
 
                 core_paired: (coreResponse) => {
                     this.roonCore = coreResponse;
