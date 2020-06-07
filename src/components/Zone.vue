@@ -2,7 +2,6 @@
  
  <template>
   <v-card class="mx-auto" min-width="200">
-    {{zone}}
   </v-card>
 </template>
 

@@ -1,19 +1,25 @@
 <template>
   <v-app id="inspire">
     <Menu />
-    <v-app-bar app clipped-left></v-app-bar>
+    <v-app-bar app clipped-left>
+      <v-col offset-sm="8" sm="4">
+        <v-select
+          v-model="selectedZone.zone"
+          :items="zones"
+          item-value="value"
+          return-object
+          label="Select a zone"
+          item-text="display_name"
+          solo
+        ></v-select>
+      </v-col>
+    </v-app-bar>
 
     <v-content>
       <v-container class="fill-height" fluid>
         <v-row align="center" justify="center">
           <v-col class="shrink">
-            <CurrentPlaying :zone="selectedZone"/>
-            <Zone
-              v-for="zone in zones"
-              :zone="zone"
-              :key="zone.id_zone"
-              @volumeUpdate="updateVolume" hidden
-            />
+            <CurrentPlaying :zone="selectedZone" />
           </v-col>
         </v-row>
       </v-container>
@@ -23,7 +29,6 @@
 </template>
 
 <script>
-import Zone from "./components/Zone";
 import Menu from "./components/Menu";
 import StreamBar from "./components/StreamBar";
 import CurrentPlaying from "./components/CurrentPlaying";
@@ -35,7 +40,6 @@ export default {
   name: "App",
 
   components: {
-    Zone,
     Menu,
     StreamBar,
     CurrentPlaying
@@ -43,7 +47,7 @@ export default {
 
   data: () => ({
     zones: [],
-    selectedZone: {zone:null, seek:null},
+    selectedZone: { zone: null, seek: null },
     myRoonInstance: {}
   }),
 
@@ -53,20 +57,30 @@ export default {
 
   mounted() {
     this.myRoonInstance = RoonServices;
-    this.myRoonInstance.connectToRoon().then(() => {
-      this.zones = this.myRoonInstance.getRoonZones();
-      this.myRoonInstance.subscribeToZone(this.updateZone);
-      //BOUCHON
-      this.selectedZone.zone = this.zones[0];
-    });
+    this.myRoonInstance
+      .connectToRoon(this.updateZones, this.updateZoneSeek)
+      .then(() => {
+        this.zones = this.myRoonInstance.getRoonZones();
+
+        //BOUCHON
+        this.selectedZone.zone = this.zones[1];
+      });
   },
 
   methods: {
     updateVolume(volumeInfo) {
       this.myRoonInstance.updateVolume(volumeInfo.output, volumeInfo.volume);
     },
-    updateZone(response, data) {
+    updateZoneSeek(data) {
       this.selectedZone.seek = _.first(data.zones_seek_changed);
+    },
+    updateZones(msg) {
+      msg.zones_changed.forEach(zone => {
+        console.log("zone.zone_id : ", zone.zone_id, " VS  this.selectedZone.zone.zone_id :",  this.selectedZone.zone.zone_id)
+        if (zone.zone_id === this.selectedZone.zone.zone_id) {
+          this.selectedZone.zone = zone;
+        }
+      });
     }
   }
 };

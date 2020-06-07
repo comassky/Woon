@@ -20,7 +20,7 @@ const RoonServices = class {
 
     constructor() { }
 
-    connectToRoon() {
+    connectToRoon(updateZone, updateSeek) {
         return new Promise(resolve => {
             this.roonInstance = new roonApi({
                 extension_id: 'roon.web.comassky',
@@ -33,16 +33,21 @@ const RoonServices = class {
                     this.roonCore = coreResponse;
 
                     this.roonCore.services.RoonApiTransport.subscribe_zones((response, msg) => {
-                        if (response === 'Subscribed') {
-                            this.roonZones = msg.zones;
-                        } else if (response === 'Changed') {
-                            //  var z;
-                            // if (msg.zones_removed) {
-                            //     this.zoneArray = this.zoneArray.filter(item =>  msg.zones_removed.indexOf(item) < 0);
-                            // } 
-                            // if (msg.zones_added) msg.zones_added.find(e => v.zones[e.zone_id] = e);
-                            // if (msg.zones_changed) msg.zones_changed.forEach(e => v.zones[e.zone_id] = e);
-                            // v.$set('zones', v.zones); 
+                        console.debug(response);
+                        switch (response) {
+                            case "Subscribed": {
+                                this.roonZones = msg.zones;
+                                break;
+                            }
+                            case "Changed": {
+                                if (msg.zones_seek_changed) {
+                                    updateSeek(msg);
+                                }
+                                if (msg.zones_changed) {
+                                    updateZone(msg)
+                                }
+                                break;
+                            }
                         }
                         resolve();
                     });
@@ -60,13 +65,6 @@ const RoonServices = class {
 
 
 
-        });
-    }
-
-    subscribeToZone(callback) {
-        this.roonCore.services.RoonApiTransport.subscribe_zones((response, data) => {
-            //EventBus.$emit("seekChanged",{response:response, data:data});
-            callback(response, data);
         });
     }
 
@@ -105,7 +103,9 @@ const RoonServices = class {
         return zone;
     }
 
-
+    getImage(imageId) {
+        return "http://192.168.1.1:9100/api/image/" + imageId + "?scale=fit&width=500&height=500";
+    }
 }
 
 export default new RoonServices;
