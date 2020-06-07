@@ -1,4 +1,4 @@
-FROM current-alpine AS build
+FROM node:current-alpine AS build
 RUN mkdir -p /workspace
 WORKDIR /workspace
 RUN apk update
