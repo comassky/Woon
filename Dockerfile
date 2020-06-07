@@ -1,3 +1,4 @@
+#syntax=docker/dockerfile:experimental
 FROM current-alpine AS build
 RUN mkdir -p /workspace
 WORKDIR /workspace
