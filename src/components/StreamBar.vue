@@ -1,6 +1,6 @@
 
  <template>
-  <v-bottom-navigation id="StreamBar" horizontal>
+  <v-bottom-navigation fixed id="StreamBar" horizontal>
     <v-row no-gutters>
       <v-col sm="3">
         <v-btn value="recent">
@@ -9,8 +9,8 @@
         </v-btn>
       </v-col>
       <v-col sm="8" class="text-center">
-        <!-- <span>{{zone.now_playing.one_line.line1}}</span> -->
-        <v-progress-linear :value="currentPosition" height="5"></v-progress-linear>
+         <CurrentPlaying :zone="zone" />
+        <!-- <v-progress-linear :value="currentPosition" height="5"></v-progress-linear> -->
       </v-col>
       <v-col sm="1">
         <Volume class="pr-4" :zone="zone.zone" @volumeUpdate="updateVolume" />
@@ -19,14 +19,18 @@
   </v-bottom-navigation>
 </template>
 
+ 
+
 <script>
 import Volume from "./Volume";
+import CurrentPlaying from "./CurrentPlaying";
 
 export default {
   name: "StreamBar",
 
   components: {
-    Volume
+    Volume,
+    CurrentPlaying
   },
 
   props: ["zone"],
@@ -59,6 +63,7 @@ export default {
 <style>
 #StreamBar {
   z-index: 999;
+  height: 80px !important;
 }
 </style>
  

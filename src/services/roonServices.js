@@ -1,7 +1,8 @@
-const roonApi = require('node-roon-api');
-const roonTransport = require('node-roon-api-transport');
-const roonImage = require('node-roon-api-image');
-const roonBrowse = require('node-roon-api-browse');
+import * as roonApi from 'node-roon-api';
+import * as roonTransport from 'node-roon-api-transport';
+import * as roonImage from 'node-roon-api-image';
+import * as roonBrowse from 'node-roon-api-browse';
+import * as roonApiStatus from 'node-roon-api-status';
 
 
 const streamAction = {
@@ -57,13 +58,15 @@ const RoonServices = class {
                 },
             });
 
+            const svc_status = new roonApiStatus(this.roonInstance);
             this.roonInstance.ws_connect({ host: '192.168.1.1', port: '9100', onclose: () => { } });
 
             this.roonInstance.init_services({
                 required_services: [roonBrowse, roonTransport, roonImage],
+                provided_services: [svc_status]
             });
 
-
+            svc_status.set_status("Service Running", false);
 
         });
     }
@@ -103,8 +106,22 @@ const RoonServices = class {
         return zone;
     }
 
-    getImage(imageId) {
-        return "http://192.168.1.1:9100/api/image/" + imageId + "?scale=fit&width=500&height=500";
+    getImage(imageId, width=500, height=500) {
+        return "http://192.168.1.1:9100/api/image/" + imageId + "?scale=fit&width=" + width + "&height=" + height;
+    }
+
+    getArtists(callback) {
+        return this.roonCore.services.RoonApiBrowse.load({
+            hierarchy: "browse",
+            count: 99999
+        }, callback);
+    }
+
+    getAlbums(callback){
+        return this.roonCore.services.RoonApiBrowse.load({
+            hierarchy: "albums",
+            count: 99999
+        }, callback);
     }
 }
 
