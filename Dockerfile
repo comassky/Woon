@@ -4,5 +4,6 @@ RUN apk add git
 RUN git clone https://github.com/comassky/Woon.git
 WORKDIR /Woon
 RUN yarn install
-EXPOSE 8080
-ENTRYPOINT ["yarn", "run", "serve"];
+
+FROM nginx:alpine
+COPY --from=build /Woon/dist /usr/share/nginx/html
