@@ -7,6 +7,7 @@
       <span text-left v-if="zone && zone.zone && zone.zone.now_playing">{{zone.zone.now_playing.one_line.line1}}</span>
     </v-col>
   </v-row>
+   
 </template>
 
 <script>

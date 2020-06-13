@@ -6,6 +6,7 @@
           <v-img :src="getImage(artist.image_key)" height="200px"></v-img>
           <v-card-title>{{artist.title}}</v-card-title>
           <v-card-subtitle>{{artist.subtitle}}</v-card-subtitle>
+          
         </v-card>
       </v-col>
     </v-row>

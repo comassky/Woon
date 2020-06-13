@@ -67,11 +67,11 @@ export default {
         this.zones = this.myRoonInstance.getRoonZones();
 
         //BOUCHON
-        this.selectedZone.zone = this.zones[1];
+        this.selectedZone.zone = this.zones[0];
         this.myRoonInstance.getArtists((err, result) => {
           this.artists = result.items;
           this.sortedArtist = this.artists;
-        });
+        }, this.selectedZone.zone.zone_id);
       });
   },
 

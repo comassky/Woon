@@ -29,6 +29,7 @@ const RoonServices = class {
                 display_version: '0.0.1',
                 publisher: 'ComasSky',
                 email: 'john.doe@gmail.com',
+                website: 'https://github.com/comassky/Woon',
 
                 core_paired: (coreResponse) => {
                     this.roonCore = coreResponse;
@@ -59,7 +60,7 @@ const RoonServices = class {
             });
 
             const svc_status = new roonApiStatus(this.roonInstance);
-            this.roonInstance.ws_connect({ host: '192.168.1.1', port: '9100', onclose: () => { } });
+            this.roonInstance.ws_connect({ host: '192.168.1.1', port: '9100', onclose: () => { console.log("Connection Lost") } });
 
             this.roonInstance.init_services({
                 required_services: [roonBrowse, roonTransport, roonImage],
@@ -68,13 +69,6 @@ const RoonServices = class {
 
             svc_status.set_status("Service Running", false);
 
-        });
-    }
-
-    searchArtist() {
-        return this.roonCore.services.RoonApiBrowse.load({
-            hierarchy: "browse"
-        }, () => {
         });
     }
 
@@ -106,22 +100,26 @@ const RoonServices = class {
         return zone;
     }
 
-    getImage(imageId, width=500, height=500) {
+    getImage(imageId, width = 500, height = 500) {
         return "http://192.168.1.1:9100/api/image/" + imageId + "?scale=fit&width=" + width + "&height=" + height;
     }
 
     getArtists(callback) {
-        return this.roonCore.services.RoonApiBrowse.load({
-            hierarchy: "browse",
-            count: 99999
-        }, callback);
+        this.roonCore.services.RoonApiBrowse.browse({ hierarchy: "artists" }, () => {
+            this.roonCore.services.RoonApiBrowse.load({
+                hierarchy: "artists",
+                count: 99999
+            }, callback);
+        });
     }
 
-    getAlbums(callback){
-        return this.roonCore.services.RoonApiBrowse.load({
-            hierarchy: "albums",
-            count: 99999
-        }, callback);
+    getAlbums(callback) {
+        this.roonCore.services.RoonApiBrowse.browse({ hierarchy: "artists" }, () => {
+            this.roonCore.services.RoonApiBrowse.load({
+                hierarchy: "albums",
+                count: 99999
+            }, callback);
+        });
     }
 }
 
