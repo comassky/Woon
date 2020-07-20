@@ -10,7 +10,7 @@
   "dependencies": {
     "axios": "^0.19.2",
     "core-js": "^3.6.5",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "node-roon-api": "github:roonlabs/node-roon-api",
     "node-roon-api-browse": "github:roonlabs/node-roon-api-browse",
     "node-roon-api-image": "github:roonlabs/node-roon-api-image",
